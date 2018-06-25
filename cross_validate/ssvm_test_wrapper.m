@@ -14,6 +14,7 @@ function [labels, scores] = ssvm_test_wrapper (data, label_test, weights, bias)
 %  - scores (n x 1): classifier scores
 %
 % Copyright (C) 2018 Roberto Leonarduzzi
+% Distributed under MIT license. See LICENSE.txt for details.
 
 [labels, scores] = SparseRegularizedSVM_test (weights, bias, data', label_test');
 labels = (labels + 3) / 2;

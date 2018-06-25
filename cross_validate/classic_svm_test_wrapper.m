@@ -14,6 +14,7 @@ function [labels, scores] = classic_svm_test_wrapper (data_test, label_test, w, 
 %  - scores (n x 1): classifier scores
 %
 % Copyright (C) 2018 Roberto Leonarduzzi
+% Distributed under MIT license. See LICENSE.txt for details.
 
     [labels, sc] = svm.predict (data_test);
     scores = diff (sc, 1, 2);  % pos class - neg class

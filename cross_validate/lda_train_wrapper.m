@@ -15,6 +15,7 @@ function [w, b, lda] = lda_train_wrapper (data, labels, lda_params)
 %  - lda: classifier object returned by fitcdiscr.
 %
 % Copyright (C) 2018 Roberto Leonarduzzi
+% Distributed under MIT license. See LICENSE.txt for details.
 
 lda = fitcdiscr (data, labels, lda_params{:});
 for ic = 2 : size (lda.Coeffs)

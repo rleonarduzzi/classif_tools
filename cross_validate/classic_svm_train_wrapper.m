@@ -15,6 +15,7 @@ function [w, b, svm] = classic_svm_train_wrapper (data, labels, svm_params)
 %  - svm: classifier object returned by fitcsvm.
 %
 % Copyright (C) 2018 Roberto Leonarduzzi
+% Distributed under MIT license. See LICENSE.txt for details.
 
     svm = fitcsvm (data, labels, svm_params{:});
     w = svm.Beta(:);

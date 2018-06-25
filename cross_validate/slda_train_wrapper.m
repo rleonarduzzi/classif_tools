@@ -23,6 +23,7 @@ function [W, b, PX, Y] = slda_train_wrapper (X, Y, sp, delta, maxiter, tol)
 %  - Y (n x 1): training labels. Needed for testing.
 %
 % Copyright (C) 2018 Roberto Leonarduzzi
+% Distributed under MIT license. See LICENSE.txt for details.
 
 if ~exist ('tol', 'var')
     tol = 1e-6;

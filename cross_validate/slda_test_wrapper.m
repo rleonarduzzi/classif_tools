@@ -16,6 +16,7 @@ function [labels, scores] = slda_test_wrapper (X, label_test, B, bias, PX_train,
 %  - scores (n x 1): classifier scores
 %
 % Copyright (C) 2018 Roberto Leonarduzzi
+% Distributed under MIT license. See LICENSE.txt for details.
 
 
 %[n, k] = size (ytrain);

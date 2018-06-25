@@ -58,6 +58,7 @@ function [weight, label_hat, score] = ...
 %  the first one is equal to the length of param_grid.
 %
 % Copyright (C) 2018 Roberto Leonarduzzi
+% Distributed under MIT license. See LICENSE.txt for details.
 
 fprintf ('\n========== New version!!! ==========\n')
 

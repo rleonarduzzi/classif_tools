@@ -15,6 +15,7 @@ function [weights, b] = ssvm_train_wrapper (data, labels, c, varargin)
 %  - b (scalar): bias of the linear classifier
 %
 % Copyright (C) 2018 Roberto Leonarduzzi
+% Distributed under MIT license. See LICENSE.txt for details.
 
 % Convert labels to -1 , +1
 mm = mean (labels);
