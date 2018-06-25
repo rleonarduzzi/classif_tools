@@ -1,23 +1,70 @@
 function [weight, label_hat, score] = ...
-    cross_validate (train_fun, test_fun, data, label, params, varargin)
+    cross_validate (train_fun, test_fun, data, label, param_grid, varargin)
+% function [weight, label_hat, score] = ...
+%     cross_validate (train_fun, test_fun, data, label, param_grid, varargin)
 %
-% Inputs:
-%       - train_fun: training function. Receives data (n x nfeat), label
-%       (n x 1), and parameters (scalars), and outputs weights (nfeat x nclass)
-%       - test_fun: testing function. Receives weights (nfeat x nclass), data (n
-%       x nfeat) and label (n x 1), and outputs estimated class(n x 1) and
-%       scores (n x 1)
-%       - data: (n x nfeat)
-%       - label: (n x 1)
-%       - params {nparams x 1}: params that will be looped in the cross
-%       validation. Each element of the cell array is an array of parameters,
-%       and will add an extra dimension to the outputs.
+% Performs cross-validation of a classifier on a grid of parameters.
+% It can be used on arbitrary classifiers, which are accessed through abstrat
+% functions for testing and training.
+%
+% INPUTS:
+%   - train_fun (function handle): training function with the
+%     following signature:
+%       [weights, varargout] = train_fun (data, label, param1, param2, ...)
+%     where:
+%       -- data (n x nfeat): training data
+%       -- labels (n x 1): labels for training data
+%       -- param1, param2 (scalars): parameters for the classifier,
+%          obtained from each point of the grid
+%       -- weights (nfeat x nclass)
+%       -- varargout: in addition to the weights, train_fun can return any
+%          number of extra (matrix) values. The number of output values needs
+%          to be indicated by optional parameter 'num_outputs_train'
+%   - test_fun (function handle): testing function with the following
+%     signature:
+%       [labels, scores] = test_fun (data_test, label_test, varargin)
+%     where:
+%       -- data_test (n x nfeat): testing data
+%       -- label_test (n x 1): labels for testing data
+%       -- labels (n x 1): estimated labels
+%       -- scores (n x 1): classifier scores
+%   - data (N x nfeat): training data
+%   - label (N x 1): labels for training data
+%   - param_grid {nparams x 1}: grid of paramenters for training.
+%     Each element of param_grid is an array of arbitrary length. The length
+%     of param_grid must be equal to the number of parameters that train_fun
+%     receives (i.e. its number of inputs beyond the second one).
+%     The grid is defined as the external product of all the elements of
+%     param_grid.
+%     A cross-validation loop will be performed for each element of the grid.
+%     An extra dimension will be added to the outputs for each dimension of
+%     the grid.
+%
+% OPTIONAL INPUTS (NAME-VALUE PAIRS):
+%  - num_fold (scalar): number of cross-validation folds (default is 5).
+%  - num_rep (scalar): number of times the cross-validation is repeated
+%  (default is 11).
+%    Results are averages over all repetitions. Use to reduce sampling bias.
+%  - verbose (logical): activate output showing process of cross-validation
+%  (default is false).
+%  - num_outputs_train (scalar): number of outputs of train_fun (default is 1)
+%
+% OUTPUTS:
+%  - weight (nfeat x nparam1 x nparam2 x ...): weights of the classifier
+%  - label_hat (N x nparam1 x nparam2 x ...): estimated labels
+%  - score (N x nparam1 x nparam2 x ...): classifier scores
+%
+%  where nparamk = length (param_grid{k}) and the number of dimensions after
+%  the first one is equal to the length of param_grid.
+%
+% Copyright (C) 2018 Roberto Leonarduzzi
 
+fprintf ('\n========== New version!!! ==========\n')
 
 p = inputParser;
-p.addParameter ('num_fold', 1);
+p.addParameter ('num_fold', 5);
 p.addParameter ('num_rep', 11);
-p.addParameter ('verbose', false, @islogical);
+p.addParameter ('verbose', true, @islogical);
 p.addParameter ('num_outputs_train', []);
 p.parse (varargin{:});
 
@@ -28,8 +75,8 @@ nout_train = p.Results.num_outputs_train;
 
 [n, n_feat] = size (data);
 n_class = size (label, 2);  % 2
-n_param = length (params);
-param_len = cellfun (@length, params);
+n_param = length (param_grid);
+param_len = cellfun (@length, param_grid);
 
 % Get the number of outputs from train_fun
 % Need to know them to collect all of them generically and pass them to test_fun
@@ -70,16 +117,16 @@ idx_all_param = repmat ({':'}, 1, n_param);
 
 % Since some of the parameters might be cell arrays,  use bogus parameters
 % which are just indices to make the grid and then index the real parameters
-for ip = 1 : length (params)
-    params_bogus{ip} = 1 : length (params{ip});
+for ip = 1 : length (param_grid)
+    param_grid_bogus{ip} = 1 : length (param_grid{ip});
 end
 
 % Outer loop: loops all parameters using linear indices and grids of the parameters
-[param_grid{1:n_param}] = ndgrid (params_bogus{:});
+[param_grid_clean{1:n_param}] = ndgrid (param_grid_bogus{:});
 for iparam = 1 : prod (param_len)
 
     % Get indices of current parameters
-    [idx_curr{1:n_param}] = ind2sub (size (param_grid{1}), iparam);
+    [idx_curr{1:n_param}] = ind2sub (size (param_grid_clean{1}), iparam);
 
     if be_verbose
         fprintf ('===== ')
@@ -91,13 +138,13 @@ for iparam = 1 : prod (param_len)
         % Use idx_curr to index each grid to get bogus params.
         % Use bogus params as indices to get 'real' params
         % Conditional allow to choose proper indexing for each parameter
-        if iscell (params{i})
-            params_curr{i} = params{i}{param_grid{i}(idx_curr{:})};
+        if iscell (param_grid{i})
+            params_curr{i} = param_grid{i}{param_grid_clean{i}(idx_curr{:})};
             print_fmt = [ '[', ...
                           repmat('%g ', 1, length (params_curr{i})), ...
                           ']'];
-        elseif isvector (params{i})
-            params_curr{i} = params{i}(param_grid{i}(idx_curr{:}));
+        elseif isvector (param_grid{i})
+            params_curr{i} = param_grid{i}(param_grid_clean{i}(idx_curr{:}));
             print_fmt = '%g';
         else
             error (['Unsupported type of parameter. Must be array or cell ' ...
@@ -146,7 +193,7 @@ for iparam = 1 : prod (param_len)
             [label_hat_loc, score_loc] = test_fun (data_tst, label_tst, ...
                                                    train_output{:});
 
-            % Pack params
+            % Pack output
             label_hat_cv_rep(irep, idx_tst) = label_hat_loc;
             score_cv_rep(irep, idx_tst, :) = score_loc;
             weight_cv_rep(irep, ifold, :, :) = train_output{1}';
