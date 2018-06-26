@@ -22,10 +22,9 @@ function [weight, label_hat, score] = ...
 %          to be indicated by optional parameter 'num_outputs_train'
 %   - test_fun (function handle): testing function with the following
 %     signature:
-%       [labels, scores] = test_fun (data_test, label_test, varargin)
+%       [labels, scores] = test_fun (data_test, varargin)
 %     where:
 %       -- data_test (n x nfeat): testing data
-%       -- label_test (n x 1): labels for testing data
 %       -- labels (n x 1): estimated labels
 %       -- scores (n x 1): classifier scores
 %   - data (N x nfeat): training data
@@ -191,7 +190,7 @@ for iparam = 1 : prod (param_len)
             % term. [train_output{:}] would be ideal but it does not work.
             train_output = cell (1, nout_train);
             [train_output{:}] = train_fun (data_trn, label_trn, params_curr{:});
-            [label_hat_loc, score_loc] = test_fun (data_tst, label_tst, ...
+            [label_hat_loc, score_loc] = test_fun (data_tst, ...
                                                    train_output{:});
 
             % Pack output
