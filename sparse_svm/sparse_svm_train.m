@@ -236,15 +236,15 @@ if bDebug
     feat1 = ind(1);
     feat2 = ind(2);
 
-    [yhat,d] = sparse_svm_test( w, b, X, y);
+    [yhat,d] = sparse_svm_test( w, b, X);
     xt = linspace(min(X(feat1,:)),max(X(feat1,:)));
     yt = linspace(min(X(feat2,:)),max(X(feat2,:)));
     [Xorig,Yorig] = meshgrid(xt,yt);
 
     t = [Xorig(:),Yorig(:)];
-    [~,f,~] = sparse_svm_test(w([feat1,feat2]), b, t', yhat');
-    [~,fm_pos,~] = sparse_svm_test(w([feat1,feat2]), b+1, t', yhat');
-    [~,fm_neg,~] = sparse_svm_test(w([feat1,feat2]), b-1, t', yhat');
+    [~,f,~] = sparse_svm_test(w([feat1,feat2]), b, t');
+    [~,fm_pos,~] = sparse_svm_test(w([feat1,feat2]), b+1, t');
+    [~,fm_neg,~] = sparse_svm_test(w([feat1,feat2]), b-1, t');
 
     Z = reshape(f,size(Xorig));
     Zm_pos = reshape(fm_pos,size(Xorig));

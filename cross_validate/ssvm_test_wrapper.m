@@ -16,5 +16,5 @@ function [labels, scores] = ssvm_test_wrapper (data, label_test, weights, bias)
 % Copyright (C) 2018 Roberto Leonarduzzi
 % Distributed under MIT license. See LICENSE.txt for details.
 
-[labels, scores] = sparse_svm_test (weights, bias, data', label_test');
+[labels, scores] = sparse_svm_test (weights, bias, data');
 labels = (labels + 3) / 2;
