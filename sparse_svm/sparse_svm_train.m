@@ -1,6 +1,6 @@
-function [w, b, crit] = SparseRegularizedSVM_train(X,y,C,varargin)
+function [w, b, crit] = sparse_svm_train(X,y,C,varargin)
 % Sparse Regularized SVM
-% [w,b,crit] = sparseRegularizedSVM (x,z,C) returns the vector 'w' and the real 'b' which
+% [w,b,crit] = sparse_svm_train (x,z,C) returns the vector 'w' and the real 'b' which
 % minimize the sparse regularized SVM, i.e.
 %
 %       min_(w,b) = ||w||_1 + C \sum_{n=1}^N max(0, 1 - z_n*(x_n'*w + b))^2
@@ -21,9 +21,9 @@ function [w, b, crit] = SparseRegularizedSVM_train(X,y,C,varargin)
 %          crit - [#iterationsx1 double] value of objective function
 %
 % Examples:
-%  [w, b, crit] = SparseRegularizedSVM_train(X,y,0.1)
-%  [w, b, crit] = SparseRegularizedSVM_train(X,y,0.1,'penalization','L1','debug',1)
-%  [w, b, crit] = SparseRegularizedSVM_train(X,y,[],[2,3,2]) - for groups
+%  [w, b, crit] = sparse_svm_train(X,y,0.1)
+%  [w, b, crit] = sparse_svm_train(X,y,0.1,'penalization','L1','debug',1)
+%  [w, b, crit] = sparse_svm_train(X,y,[],[2,3,2]) - for groups
 %  sparsity. [2,3,2] = 7 features within 3 groups
 %
 % J. Frecon, J. Spilka, N. Pustelnik, P. Abry,
@@ -124,8 +124,6 @@ if strcmp(penalization,'L1')
 elseif strcmp(penalization,'L12')
     f.prox  = @(w,nr,gamma) prox_L12(w, nr, gamma);
     f.crit  = @(w,nr) sum(nr.*sqrt(sum(w.^2,1)));
-    %f.crit  = @(w,nr) sum(nr.*sqrt(sum(w.^2,1)));
-    %f.crit  = @(w,nr) sum(sqrt(sum(w.^2,1)));
 elseif strcmp(penalization,'L1inf')
     f.prox  = @(w,nr,gamma) prox_L1Linf(w, 1, gamma);
     f.crit  = @(w) max(sum(abs(w),1));
@@ -205,7 +203,7 @@ while ~flag
 
     if bDebug
         if rem(j,10^2) == 0
-            %fprintf('t = %d, crit = %2.6f\n',j,critm);
+            fprintf('t = %d, crit = %2.6f\n',j,critm);
         end
     end
 
@@ -237,38 +235,16 @@ if bDebug
 
     feat1 = ind(1);
     feat2 = ind(2);
-    %feat1 = 1;
-    %feat2 = 2;
 
-%     nmin = min(min(X(feat1,:),X(feat2,:)));
-%     nmax = max(max(X(feat1,:),X(feat2,:)));
-%     test    = [nmin:.1:nmax];
-%     alpha   = -w(feat1,:)/w(feat2,:);
-%     beta    = sqrt(alpha^2+1)*b;
-%     vector  = alpha*test + beta;
-%
-%     yhat = SparseRegularizedSVM_test( w, b, X);
-%
-%     figure(212); clf;
-%     hold on;
-%     set(gca,'fontsize',12);
-%     gscatter(X(feat1,:),X(feat2,:),yhat,'rb','..'); hold on;
-%     a = axis;
-%     xlabel(aFeatNames{feat1});
-%     ylabel(aFeatNames{feat2});
-%     plot(test,vector,'b','LineWidth',2);
-%     axis(a);
-%     grid on;
-
-    [yhat,d] = SparseRegularizedSVM_test( w, b, X, y);
+    [yhat,d] = sparse_svm_test( w, b, X, y);
     xt = linspace(min(X(feat1,:)),max(X(feat1,:)));
     yt = linspace(min(X(feat2,:)),max(X(feat2,:)));
     [Xorig,Yorig] = meshgrid(xt,yt);
 
     t = [Xorig(:),Yorig(:)];
-    [~,f,~] = SparseRegularizedSVM_test(w([feat1,feat2]), b, t', yhat');
-    [~,fm_pos,~] = SparseRegularizedSVM_test(w([feat1,feat2]), b+1, t', yhat');
-    [~,fm_neg,~] = SparseRegularizedSVM_test(w([feat1,feat2]), b-1, t', yhat');
+    [~,f,~] = sparse_svm_test(w([feat1,feat2]), b, t', yhat');
+    [~,fm_pos,~] = sparse_svm_test(w([feat1,feat2]), b+1, t', yhat');
+    [~,fm_neg,~] = sparse_svm_test(w([feat1,feat2]), b-1, t', yhat');
 
     Z = reshape(f,size(Xorig));
     Zm_pos = reshape(fm_pos,size(Xorig));

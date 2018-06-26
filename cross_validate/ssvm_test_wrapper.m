@@ -1,7 +1,7 @@
 function [labels, scores] = ssvm_test_wrapper (data, label_test, weights, bias)
 % function [labels, scores] = ssvm_test_wrapper (data, label_test, weights, bias)
 %
-% Wrapper for SparseRegularizedSVM_test for use with cross_validate.
+% Wrapper for sparse_svm_test for use with cross_validate.
 %
 % INPUTS:
 %  - data (n x nfeat): testing data
@@ -16,5 +16,5 @@ function [labels, scores] = ssvm_test_wrapper (data, label_test, weights, bias)
 % Copyright (C) 2018 Roberto Leonarduzzi
 % Distributed under MIT license. See LICENSE.txt for details.
 
-[labels, scores] = SparseRegularizedSVM_test (weights, bias, data', label_test');
+[labels, scores] = sparse_svm_test (weights, bias, data', label_test');
 labels = (labels + 3) / 2;
