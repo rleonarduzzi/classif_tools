@@ -1,11 +1,10 @@
-function [labels, scores] = slda_test_wrapper (X, label_test, B, bias, PX_train, ytrain)
-% function [labels, scores] = slda_test_wrapper (X, label_test, B, bias, PX_train, ytrain)
+function [labels, scores] = slda_test_wrapper (X, B, bias, PX_train, ytrain)
+% function [labels, scores] = slda_test_wrapper (X, B, bias, PX_train, ytrain)
 %
 % Wrapper function for testing a SLDA classifier, for use with cross_validate.
 %
 % INPUTS:
 %  - X (n x nfeat): testing data
-%  - label_test (n x 1): labels for testing data
 %  - Inputs 3 to 6 are the outputs of lda_train_wrapper
 %    -- B (nfeat x nclass): weights of the linear classifier
 %    -- bias (scalar): unused. Kept for compatibility

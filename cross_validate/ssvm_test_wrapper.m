@@ -1,11 +1,10 @@
-function [labels, scores] = ssvm_test_wrapper (data, label_test, weights, bias)
-% function [labels, scores] = ssvm_test_wrapper (data, label_test, weights, bias)
+function [labels, scores] = ssvm_test_wrapper (data, weights, bias)
+% function [labels, scores] = ssvm_test_wrapper (data, weights, bias)
 %
 % Wrapper for sparse_svm_test for use with cross_validate.
 %
 % INPUTS:
 %  - data (n x nfeat): testing data
-%  - label_test (n x 1): labels for testing data
 %  - Inputs 3 to 4 are the outputs of lda_train_wrapper
 %    -- weights (n x 1): weights of the linear classifier
 %    -- bias (n x 1): bias of the linear classifier
