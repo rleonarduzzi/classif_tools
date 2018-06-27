@@ -59,8 +59,6 @@ function [weight, label_hat, score] = ...
 % Copyright (C) 2018 Roberto Leonarduzzi
 % Distributed under MIT license. See LICENSE.txt for details.
 
-fprintf ('\n========== New version!!! ==========\n')
-
 p = inputParser;
 p.addParameter ('num_fold', 5);
 p.addParameter ('num_rep', 11);
